@@ -1,163 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>神马搜索</title>
-    <style type="text/css">
-        *{
-            margin: 0;
-            padding: 0;
-        }
-        body{
-            width: 100%;
-            height: 100%;
-            background:#65718a;;}
-        .search-box {
-            width: 640px;
-            margin: 50px auto;
-        }
-        .search-logo {
-            width: 270px;
-            margin: 0 auto;
-        }
-        .search-logo img {
-            width: 100%;
-        }
-        .search-main {
-            height: 80px;
-        }
-        .serch-main input {
-            height: 100%;
-        }
-        .search-con {
-            float: left;
-            width: 522px;
-            height: 20px;
-            padding: 9px 7px;
-            font: 16px arial;
-            border: 1px solid #b8b8b8;
-            border-bottom: 1px solid #ccc;
-            border-right: 0;
-            vertical-align: top;
-            outline: none;
-        }
-        .search-con:focus {
-            border-color: #38f;
-        }
-        .active {
-            border-color: #38f;
-        }
-        .search-btn {
-            float: left;
-            cursor: pointer;
-            width: 102px;
-            height: 40px;
-            border: 0;
-            background: none;
-            background-color: #38f;
-            font-size: 16px;
-            color: white;
-            font-weight: normal;
-        }
-        .search-spirit {
-            line-height: 24px;
-            border:1px solid #ccc;
-            list-style: none;
-        }
-        .search-spirit a {
-            display: block;
-            padding-left: 7px;
-            color: #000;
-            text-decoration: none;
-        }
-        .search-active {
-            background:#65718a;
-        }
-    </style>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="http://static.runoob.com/assets/vue/1.0.11/vue.min.js"></script>
 </head>
 <body>
-<div class="search-box">
-    <div class="search-logo">
-        <img src="./img/sm.png" >
-    </div>
-    <div class="search-main">
-        <input type="text" autofocus="true" class="search-con" v-model="searchKey1" v-on:keyup="getData($event)"  v-on:keydown='keyGo($event)' v-on:blur="none()"/>
-        <input type="button" value="神马一下" class="search-btn" v-on:click='go()'/>
-        <ul class="search-spirit">
-            <li v-for="data in searchList"><a href="https://www.baidu.com/s?wd={{data.q}}" v-html="data.q" v-bind:class="{'search-active':$index==nowIndex}" v-on:mouseover="activeHover($index)" v-on:mouseout="leaveHover()"></a></li>
-        </ul>
-    </div>
+<div id="app">
+<h1>{{ title }}</h1>
+  <input v-model="newItem" @keyup.enter="dothis">
+  <ul>
+    <li  v-for=" x in items " v-bind:class="{ finished: x.isFinished }"    @click="toggle(x)">{{ x.label }}</li>
+  </ul>
+
 </div>
-<script src="./js/jquery.min.js"></script>
-<script src="./js/vue.min.js"></script>
 <script>
-    let vue = new Vue({
-        el : 'body',
-        data : {
-            searchKey : '',
-            searchKey1 :'',
-            nowIndex : -1,
-            searchList : []
-        },
-        ready : function() {
-        },
-        methods :  {
-            getData : function(event) {
-                if( event.keyCode===40 || event.keyCode===38 ) {
-                    return;
-                }
-                var oThis = this;
-                oThis.searchKey = oThis.searchKey1;
-                this.nowIndex = -1;
-                $.ajax({
-                    type:"post",
-                    url : "http://suggestion.baidu.com/su?&wd="+ oThis.searchKey +"&json=1&p=3&cb=aa",
-                    dataType : 'jsonp',
-                    jsonp : 'aa',
-                    jsonpCallback : 'aa',
-                    success: function(data){
-                        if(data.g) {
-                            oThis.searchList = data.g;
-                        }
-                    },
-                    error :function() {
-                        console.log('接口报错，请拨打110');
-                    }
-                });
-            },
-            go : function() {
-                this.searchKey = this.searchKey1;
-                window.location.href = 'https://www.baidu.com/s?wd=' + this.searchKey;
-            },
-            keyGo: function(event) {
-                if(event.keyCode == 13) {
-                    this.go();
-                }
-                if( event.keyCode===40 ) {
-                    this.nowIndex ++;
-                    this.nowIndex === this.searchList.length ? this.nowIndex = 0 : '';
-                    this.searchKey1 = this.searchList[this.nowIndex].q;
-                }
-                if( event.keyCode===38 ) {
-                    this.nowIndex --;
-                    this.nowIndex === -1 ? this.nowIndex = this.searchList.length-1 : '';
-                    this.searchKey1 = this.searchList[this.nowIndex].q;
-                }
-            },
-            none : function() {
-                setTimeout(()=> {
-                    this.searchList = null;
-                this.nowIndex = -1;
-            },100);
-            },
-            activeHover: function(index) {
-                this.nowIndex = index;
-            },
-            leaveHover : function() {
-                this.nowIndex = -1;
-            }
-        }
-    });
+   var app = new Vue({
+   	el: "#app",
+   	data: {
+   		title: "to do list",
+   		items: [],
+   		newItem: ''
+
+     },
+     methods: {
+     	toggle: function(x){
+           console.log(x.isFinished = !x.isFinished)
+     	},
+     	dothis: function(){
+     		this.items.push({
+     			label: this.newItem,
+     			isFinished: false
+     		})
+     		this.newItem = ''
+     	}
+
+     }
+   })
+
 </script>
+<style>
+.finished{
+	text-decoration:underline;
+}
+
+</style>
+	
 </body>
 </html>
